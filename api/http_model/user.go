@@ -32,3 +32,16 @@ type UserUpdateReq struct {
 type LogoutReq struct {
 	Token string `json:"token" binding:"required"`
 }
+
+type UserInfoReq struct {
+	UserID int64 `form:"user_id" binding:"required"`
+}
+
+type UserInfoResp struct {
+	ID        int64   `json:"id"`
+	NickName  string  `json:"nick_name"`
+	Email     string  `json:"email"`
+	Phone     *string `json:"phone,omitempty"`
+	CreatedAt int64   `json:"created_at"`
+	UpdatedAt int64   `json:"updated_at"`
+}

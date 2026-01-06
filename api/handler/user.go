@@ -33,6 +33,7 @@ func (h *UserHandler) RegisterRoutes(engine *gin.Engine) {
 	userGroup.Use(middleware.Auth(h.svcCtx))
 	userGroup.PUT("/update", h.Update)
 	userGroup.POST("/logout", h.Logout)
+	userGroup.GET("/info", h.Info)
 }
 
 func (h *UserHandler) Register(c *gin.Context) {
@@ -129,4 +130,19 @@ func (h *UserHandler) Logout(c *gin.Context) {
 		return
 	}
 	OK(c, nil)
+}
+
+func (h *UserHandler) Info(c *gin.Context) {
+	var req http_model.UserInfoReq
+	if err := c.ShouldBindQuery(&req); err != nil {
+		Respond(c, 400, errcode.CodeBadRequest, "invalid request", nil)
+		return
+	}
+	resp, err := h.logic.GetUserInfo(req.UserID)
+	if err != nil {
+		logger.L().Errorf("get user info error: %v", err)
+		Respond(c, 400, errcode.CodeBadRequest, err.Error(), nil)
+		return
+	}
+	OK(c, resp)
 }

@@ -12,6 +12,7 @@ type Logic interface {
 	SendEmailCode(req *http_model.SendEmailCodeReq) error
 	Update(userID int64, req *http_model.UserUpdateReq) error
 	Logout(req *http_model.LogoutReq) error
+	GetUserInfo(userID int64) (*http_model.UserInfoResp, error)
 }
 
 type logicImpl struct {

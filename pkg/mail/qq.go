@@ -16,6 +16,7 @@ type qqMail struct {
 	addr     string
 	username string
 	password string
+	from     string
 }
 
 func NewQQMail() (Manager, error) {
@@ -29,12 +30,13 @@ func NewQQMail() (Manager, error) {
 		smtpPort: "465",
 		addr:     "smtp.qq.com:465",
 		username: username,
+		from:     "web-chat <" + username + ">",
 		password: password,
 	}, nil
 }
 func (q *qqMail) Send(msg Message, targets []string) error {
 	e := &email.Email{
-		From:    q.username,
+		From:    q.from,
 		To:      targets,
 		Subject: msg.Title,
 		Text:    []byte(msg.Content.(string)),

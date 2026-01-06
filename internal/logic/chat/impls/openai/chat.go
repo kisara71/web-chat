@@ -34,6 +34,7 @@ func NewChatLogic(svcCtx *svc.Context) (chat.Logic, error) {
 	}
 	headers := map[string]string{
 		"Authorization": "Bearer " + key,
+		"Content-Type":  "application/json",
 	}
 	return &logicImpl{
 		svcCtx:  svcCtx,
@@ -60,7 +61,7 @@ func (l *logicImpl) ResponseStream(ctx context.Context, req *httpmodel.Response)
 	if err != nil {
 		return nil, err
 	}
-	return newOpenAIResponsesStream(sr), nil
+	return newOpenAIChatCompletionsStream(sr), nil
 }
 
 func (l *logicImpl) PullModules(ctx context.Context) (*httpmodel.ModelListResp, error) {
