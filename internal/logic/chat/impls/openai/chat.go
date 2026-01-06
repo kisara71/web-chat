@@ -43,7 +43,7 @@ func NewChatLogic(svcCtx *svc.Context) (chat.Logic, error) {
 		headers: headers,
 	}, nil
 }
-func (l *logicImpl) ResponseStream(req *httpmodel.Response) (httpmodel.MessageSteam, error) {
+func (l *logicImpl) ResponseStream(ctx context.Context, req *httpmodel.Response) (httpmodel.MessageSteam, error) {
 	var (
 		sr  *http2.SSEReader
 		err error
@@ -56,21 +56,21 @@ func (l *logicImpl) ResponseStream(req *httpmodel.Response) (httpmodel.MessageSt
 	if err != nil {
 		return nil, err
 	}
-	sr, err = l.utils.RequestHandler.DoSSE(context.Background(), http.MethodPost, l.urls.Completion, bytes.NewReader(bodyByte), l.headers)
+	sr, err = l.utils.RequestHandler.DoSSE(ctx, http.MethodPost, l.urls.Completion, bytes.NewReader(bodyByte), l.headers)
 	if err != nil {
 		return nil, err
 	}
 	return newOpenAIResponsesStream(sr), nil
 }
 
-func (l *logicImpl) PullModules() (*httpmodel.ModelListResp, error) {
+func (l *logicImpl) PullModules(ctx context.Context) (*httpmodel.ModelListResp, error) {
 	var (
 		res = new(httpmodel.ModelListResp)
 		err error
 	)
 
 	resp, err := l.utils.RequestHandler.DoCommon(
-		context.Background(),
+		ctx,
 		http.MethodGet,
 		l.urls.ModelList,
 		nil,

@@ -35,7 +35,7 @@ func (h *ChatHandler) RegisterRoutes(engine *gin.Engine) {
 }
 
 func (h *ChatHandler) Models(c *gin.Context) {
-	resp, err := h.logic.PullModules()
+	resp, err := h.logic.PullModules(c.Request.Context())
 	if err != nil {
 		logger.L().Errorf("pull models error: %v", err)
 		Respond(c, http.StatusBadRequest, errcode.CodeBadRequest, err.Error(), nil)
@@ -50,7 +50,7 @@ func (h *ChatHandler) Stream(c *gin.Context) {
 		Respond(c, http.StatusBadRequest, errcode.CodeBadRequest, "invalid request", nil)
 		return
 	}
-	stream, err := h.logic.ResponseStream(&req)
+	stream, err := h.logic.ResponseStream(c.Request.Context(), &req)
 	if err != nil {
 		logger.L().Errorf("chat stream error: %v", err)
 		Respond(c, http.StatusBadRequest, errcode.CodeBadRequest, err.Error(), nil)
