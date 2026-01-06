@@ -19,7 +19,7 @@ func (l *logicImpl) Logout(req *http_model.LogoutReq) error {
 	claim := &auth.UserClaim{}
 	_, err := l.svcCtx.Auth.TrackAuthToken(req.Token, claim)
 	if err != nil {
-		lgr.Printf("logout token error: %v", err)
+		lgr.Errorf("logout token error: %v", err)
 		return err
 	}
 	ttl := authTokenTTL
@@ -33,7 +33,7 @@ func (l *logicImpl) Logout(req *http_model.LogoutReq) error {
 	}
 	key := blacklistPrefix + req.Token
 	if err := l.svcCtx.Infra.Redis.Set(context.Background(), key, "1", ttl).Err(); err != nil {
-		lgr.Printf("logout redis error: %v", err)
+		lgr.Errorf("logout redis error: %v", err)
 		return err
 	}
 	return nil

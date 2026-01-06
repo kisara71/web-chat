@@ -7,6 +7,5 @@ import (
 )
 
 func Recovery() gin.HandlerFunc {
-	lgr := logger.L()
-	return gin.RecoveryWithWriter(lgr.Writer())
+	return gin.RecoveryWithWriter(logger.Writer())
 }

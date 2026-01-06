@@ -7,6 +7,5 @@ import (
 )
 
 func Logger() gin.HandlerFunc {
-	lgr := logger.L()
-	return gin.LoggerWithWriter(lgr.Writer())
+	return gin.LoggerWithWriter(logger.Writer())
 }

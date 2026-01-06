@@ -19,12 +19,15 @@ func main() {
 		lgr.Fatalf("load config error: %v", err)
 	}
 	svcCtx := svc.NewContext(cfg)
-	router := api.NewRouter(svcCtx)
+	router, err := api.NewRouter(svcCtx)
+	if err != nil {
+		lgr.Fatalf("router init error: %v", err)
+	}
 	addr := os.Getenv("HTTP_ADDR")
 	if addr == "" {
 		addr = ":8080"
 	}
-	lgr.Printf("server start on %s", addr)
+	lgr.Infof("server start on %s", addr)
 	if err := router.Run(addr); err != nil {
 		lgr.Fatalf("server stopped: %v", err)
 	}
