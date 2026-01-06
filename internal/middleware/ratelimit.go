@@ -40,7 +40,7 @@ func RateLimit(svcCtx *svc.Context, limit int, window time.Duration) gin.Handler
 		member := fmt.Sprintf("%d-%d", now, rand.Int63())
 		allowed, err := svcCtx.Infra.Redis.Eval(ctx, slidingWindowScript, []string{key}, now, window.Milliseconds(), limit, member).Int()
 		if err != nil {
-			lgr.Printf("rate limit redis error: %v", err)
+			lgr.Errorf("rate limit redis error: %v", err)
 			abortInternal(c)
 			return
 		}

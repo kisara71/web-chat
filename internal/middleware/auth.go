@@ -35,7 +35,7 @@ func Auth(svcCtx *svc.Context) gin.HandlerFunc {
 		claim := &auth.UserClaim{}
 		_, err := svcCtx.Auth.TrackAuthToken(token, claim)
 		if err != nil {
-			lgr.Printf("auth token error: %v", err)
+			lgr.Errorf("auth token error: %v", err)
 			abort(c, http.StatusUnauthorized, errcode.CodeUnauthorized, "invalid token")
 			return
 		}
@@ -47,7 +47,7 @@ func Auth(svcCtx *svc.Context) gin.HandlerFunc {
 			return
 		}
 		if err != nil && err != redis.Nil {
-			lgr.Printf("redis error: %v", err)
+			lgr.Errorf("redis error: %v", err)
 			abortInternal(c)
 			return
 		}

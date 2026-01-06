@@ -23,7 +23,7 @@ func (l *logicImpl) Update(userID int64, req *http_model.UserUpdateReq) error {
 	if req.Phone != nil {
 		ok, err := l.svcCtx.Utils.Regexp.ValidatePhone(*req.Phone)
 		if err != nil || !ok {
-			lgr.Printf("update phone invalid: %v", err)
+			lgr.Errorf("update phone invalid: %v", err)
 			return fmt.Errorf("phone number is invalid")
 		}
 		updateMap["phone"] = *req.Phone
@@ -31,7 +31,7 @@ func (l *logicImpl) Update(userID int64, req *http_model.UserUpdateReq) error {
 	if req.Email != nil {
 		ok, err := l.svcCtx.Utils.Regexp.ValidateEmail(*req.Email)
 		if err != nil || !ok {
-			lgr.Printf("update email invalid: %v", err)
+			lgr.Errorf("update email invalid: %v", err)
 			return fmt.Errorf("email is invalid")
 		}
 		updateMap["email"] = *req.Email
@@ -42,7 +42,7 @@ func (l *logicImpl) Update(userID int64, req *http_model.UserUpdateReq) error {
 			bcrypt.DefaultCost,
 		)
 		if err != nil {
-			lgr.Printf("update hash error: %v", err)
+			lgr.Errorf("update hash error: %v", err)
 			return err
 		}
 		updateMap["password"] = string(hash)
@@ -51,7 +51,7 @@ func (l *logicImpl) Update(userID int64, req *http_model.UserUpdateReq) error {
 		return fmt.Errorf("no fields to update")
 	}
 	if err := l.svcCtx.Dao.UserDao.UpdateUser(userID, updateMap); err != nil {
-		lgr.Printf("update user error: %v", err)
+		lgr.Errorf("update user error: %v", err)
 		return err
 	}
 	return nil

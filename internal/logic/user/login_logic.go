@@ -24,11 +24,11 @@ func (l *logicImpl) Login(req *http_model.LoginReq) (string, error) {
 	)
 	entity, err = l.fetchLoginUser(req.Account)
 	if err != nil {
-		lgr.Printf("login fetch user error: %v", err)
+		lgr.Errorf("login fetch user error: %v", err)
 		return "", err
 	}
 	if err = bcrypt.CompareHashAndPassword([]byte(entity.Password), []byte(req.Password)); err != nil {
-		lgr.Printf("login password invalid: %v", err)
+		lgr.Errorf("login password invalid: %v", err)
 		return "", fmt.Errorf("password is invalid")
 	}
 	claim := auth.UserClaim{
@@ -40,7 +40,7 @@ func (l *logicImpl) Login(req *http_model.LoginReq) (string, error) {
 	}
 	token, err := l.svcCtx.Auth.GenAuthToken(&claim)
 	if err != nil {
-		lgr.Printf("login token sign error: %v", err)
+		lgr.Errorf("login token sign error: %v", err)
 		return "", err
 	}
 	return token, nil

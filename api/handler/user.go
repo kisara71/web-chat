@@ -40,7 +40,7 @@ func (h *UserHandler) Register(c *gin.Context) {
 		return
 	}
 	if err := h.logic.Register(&req); err != nil {
-		logger.L().Printf("register error: %v", err)
+		logger.L().Errorf("register error: %v", err)
 		Respond(c, 400, errcode.CodeBadRequest, err.Error(), nil)
 		return
 	}
@@ -55,7 +55,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 	}
 	token, err := h.logic.Login(&req)
 	if err != nil {
-		logger.L().Printf("login error: %v", err)
+		logger.L().Errorf("login error: %v", err)
 		Respond(c, 401, errcode.CodeUnauthorized, err.Error(), nil)
 		return
 	}
@@ -79,7 +79,7 @@ func (h *UserHandler) Update(c *gin.Context) {
 		return
 	}
 	if err := h.logic.Update(id, &req); err != nil {
-		logger.L().Printf("update error: %v", err)
+		logger.L().Errorf("update error: %v", err)
 		Respond(c, 400, errcode.CodeBadRequest, err.Error(), nil)
 		return
 	}
@@ -93,7 +93,7 @@ func (h *UserHandler) Logout(c *gin.Context) {
 		return
 	}
 	if err := h.logic.Logout(&req); err != nil {
-		logger.L().Printf("logout error: %v", err)
+		logger.L().Errorf("logout error: %v", err)
 		Respond(c, 400, errcode.CodeBadRequest, err.Error(), nil)
 		return
 	}

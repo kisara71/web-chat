@@ -2,10 +2,14 @@ mysql_conf:
   user: "root"
   password: "123456"
   host: "localhost"
-  port: 3306
+  port: 3307
   database: "web_chat"
 
 redis_conf:
-  addr: "localhost:6379"
-  password: ""
+  addr: "localhost:6380"
+  password: "123456"
   db: 0
+
+llm_request_conf:
+  openai:
+    base_url: "https://api.qhaigc.net/v1"

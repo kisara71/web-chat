@@ -21,17 +21,17 @@ func (l *logicImpl) Register(req *http_model.UserRegisterReq) error {
 		bcrypt.DefaultCost,
 	)
 	if err != nil {
-		lgr.Printf("register hash error: %v", err)
+		lgr.Errorf("register hash error: %v", err)
 		return err
 	}
 	if ok, err = l.svcCtx.Utils.Regexp.ValidatePhone(req.Phone); !ok || err != nil {
-		lgr.Printf("register phone invalid: %v", err)
+		lgr.Errorf("register phone invalid: %v", err)
 		return fmt.Errorf("phone number is invalid")
 	}
 	entity.Phone = req.Phone
 	if req.Email != nil {
 		if ok, err = l.svcCtx.Utils.Regexp.ValidateEmail(*req.Email); !ok || err != nil {
-			lgr.Printf("register email invalid: %v", err)
+			lgr.Errorf("register email invalid: %v", err)
 			return fmt.Errorf("email is invalid")
 		}
 		entity.Email = *req.Email
@@ -41,7 +41,7 @@ func (l *logicImpl) Register(req *http_model.UserRegisterReq) error {
 
 	err = l.svcCtx.Dao.UserDao.CreateUser(entity)
 	if err != nil {
-		lgr.Printf("register create user error: %v", err)
+		lgr.Errorf("register create user error: %v", err)
 		return err
 	}
 	return nil
