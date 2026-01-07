@@ -22,6 +22,10 @@ func newMysql(cfg configs.Config) *gorm.DB {
 	if err != nil {
 		panic("failed to connect database")
 	}
-	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(
+		&model.User{},
+		&model.Message{},
+		&model.Conversation{},
+	)
 	return db
 }

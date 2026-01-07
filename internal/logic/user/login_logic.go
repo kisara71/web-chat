@@ -33,7 +33,7 @@ func (l *logicImpl) Login(req *http_model.LoginReq) (string, error) {
 		return "", fmt.Errorf("password is invalid")
 	}
 	claim := auth.UserClaim{
-		UserID: entity.ID,
+		UserID: entity.UUID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(authTokenTTL).Unix(),
 			IssuedAt:  time.Now().Unix(),
@@ -93,7 +93,7 @@ func (l *logicImpl) LoginByCode(req *http_model.LoginCodeReq) (string, error) {
 }
 
 type authUser struct {
-	ID       int64
+	UUID     string
 	Password string
 }
 
@@ -107,7 +107,7 @@ func (l *logicImpl) fetchLoginUser(account string) (*authUser, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &authUser{ID: entity.ID, Password: entity.Password}, nil
+		return &authUser{UUID: entity.UUID, Password: entity.Password}, nil
 	}
 	ok, err = l.svcCtx.Utils.Regexp.ValidateEmail(account)
 	if err != nil {
@@ -118,7 +118,7 @@ func (l *logicImpl) fetchLoginUser(account string) (*authUser, error) {
 		if err != nil {
 			return nil, err
 		}
-		return &authUser{ID: entity.ID, Password: entity.Password}, nil
+		return &authUser{UUID: entity.UUID, Password: entity.Password}, nil
 	}
 	return nil, fmt.Errorf("account is invalid")
 }

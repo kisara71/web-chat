@@ -10,9 +10,9 @@ type Logic interface {
 	Login(req *http_model.LoginReq) (string, error)
 	LoginByCode(req *http_model.LoginCodeReq) (string, error)
 	SendEmailCode(req *http_model.SendEmailCodeReq) error
-	Update(userID int64, req *http_model.UserUpdateReq) error
+	Update(userID string, req *http_model.UserUpdateReq) error
 	Logout(req *http_model.LogoutReq) error
-	GetUserInfo(userID int64) (*http_model.UserInfoResp, error)
+	GetUserInfo(userID string) (*http_model.UserInfoResp, error)
 }
 
 type logicImpl struct {

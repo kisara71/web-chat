@@ -34,6 +34,13 @@ type LogoutReq struct {
 }
 
 type UserInfoReq struct {
+	UserID string `form:"user_id" binding:"required"`
+}
+
+type UserInfoResp struct {
+	UUID      string  `json:"uuid"`
+
+type UserInfoReq struct {
 	UserID int64 `form:"user_id" binding:"required"`
 }
 
@@ -45,3 +52,4 @@ type UserInfoResp struct {
 	CreatedAt int64   `json:"created_at"`
 	UpdatedAt int64   `json:"updated_at"`
 }
+

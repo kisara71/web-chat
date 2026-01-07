@@ -44,8 +44,9 @@ func (l *logicImpl) Register(req *http_model.UserRegisterReq) error {
 		}
 		entity.Phone = req.Phone
 	}
-	entity.ID = l.svcCtx.Utils.SnowFlake.Generate().Int64()
+	entity.UUID = l.svcCtx.Utils.UUID.New()
 	entity.Email = req.Email
+
 	entity.Password = string(hash)
 	entity.NickName = req.NickName
 

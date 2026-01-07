@@ -4,6 +4,7 @@ import (
 	"web-chat/pkg/code"
 	"web-chat/pkg/http"
 	"web-chat/pkg/regexp"
+	"web-chat/pkg/uuid"
 
 	"github.com/bwmarrin/snowflake"
 	"github.com/redis/go-redis/v9"
@@ -14,6 +15,7 @@ type Utils struct {
 	Regexp         *regexp.Handler
 	RequestHandler *http.RequestHandler
 	Code           *code.Manager
+	UUID           *uuid.Wrap
 }
 
 func NewUtils(redisCmd redis.Cmdable) *Utils {
@@ -26,5 +28,6 @@ func NewUtils(redisCmd redis.Cmdable) *Utils {
 		SnowFlake:      snowFlake,
 		Code:           code.NewManager(redisCmd),
 		RequestHandler: http.NewRequestHandler(),
+		UUID:           uuid.NewWrap(),
 	}
 }
