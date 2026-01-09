@@ -5,8 +5,8 @@ import (
 	"web-chat/api/http_model"
 )
 
-func (l *logicImpl) GetUserInfo(userID int64) (*http_model.UserInfoResp, error) {
-	if userID == 0 {
+func (l *logicImpl) GetUserInfo(userID string) (*http_model.UserInfoResp, error) {
+	if userID == "" {
 		return nil, fmt.Errorf("user id is required")
 	}
 	entity, err := l.svcCtx.Dao.UserDao.GetUserByID(userID)
@@ -14,7 +14,7 @@ func (l *logicImpl) GetUserInfo(userID int64) (*http_model.UserInfoResp, error) 
 		return nil, err
 	}
 	return &http_model.UserInfoResp{
-		ID:        entity.ID,
+		UUID:      entity.UUID,
 		NickName:  entity.NickName,
 		Email:     entity.Email,
 		Phone:     entity.Phone,

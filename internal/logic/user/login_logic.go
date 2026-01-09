@@ -78,7 +78,7 @@ func (l *logicImpl) LoginByCode(req *http_model.LoginCodeReq) (string, error) {
 		return "", err
 	}
 	claim := auth.UserClaim{
-		UserID: entity.ID,
+		UserID: entity.UUID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(authTokenTTL).Unix(),
 			IssuedAt:  time.Now().Unix(),
