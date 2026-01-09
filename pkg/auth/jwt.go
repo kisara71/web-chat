@@ -46,3 +46,21 @@ func (j *JwtHandler) GenAuthToken(claim jwt.Claims) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 	return token.SignedString(j.authToken)
 }
+
+func (j *JwtHandler) TrackRefreshToken(tokenString string, claim jwt.Claims) (jwt.Claims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, claim, func(token *jwt.Token) (interface{}, error) {
+		return j.refreshToken, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	if !token.Valid {
+		return nil, fmt.Errorf("invalid token")
+	}
+	return claim, nil
+}
+
+func (j *JwtHandler) GenRefreshToken(claim jwt.Claims) (string, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+	return token.SignedString(j.refreshToken)
+}

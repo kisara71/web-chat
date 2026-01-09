@@ -26,6 +26,7 @@ func newMysql(cfg configs.Config) *gorm.DB {
 		&model.User{},
 		&model.Message{},
 		&model.Conversation{},
+		&model.UserProfile{},
 	)
 	return db
 }

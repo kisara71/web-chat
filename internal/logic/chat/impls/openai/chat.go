@@ -28,10 +28,10 @@ type logicImpl struct {
 }
 
 const (
-	titleMaxChars       = 20
-	defaultPageSize     = 20
-	maxPageSize         = 100
-	titleMessageLimit   = 4
+	titleMaxChars     = 20
+	defaultPageSize   = 20
+	maxPageSize       = 100
+	titleMessageLimit = 4
 )
 
 type completionMessage struct {
@@ -112,6 +112,13 @@ func (l *logicImpl) ResponseStream(ctx context.Context, req *httpmodel.Completio
 	if err != nil {
 		return nil, "", err
 	}
+	systemPrompt, err := l.BuildUserSystemPrompt(ctx, userID)
+	if err != nil {
+		return nil, "", err
+	}
+	if systemPrompt != "" {
+		promptMessages = append([]memory.PromptMessage{{Role: "system", Content: systemPrompt}}, promptMessages...)
+	}
 
 	sr, err := l.doStreamCompletion(ctx, req.Model, promptMessages)
 	if err != nil {
@@ -182,9 +189,15 @@ func (l *logicImpl) CreateConversation(ctx context.Context, req *httpmodel.Creat
 		return nil, err
 	}
 
-	reply, err := l.doCompletionFromPrompt(ctx, req.Model, []memory.PromptMessage{
-		{Role: userMsg.Role, Content: userMsg.Content},
-	})
+	prompt := []memory.PromptMessage{{Role: userMsg.Role, Content: userMsg.Content}}
+	systemPrompt, err := l.BuildUserSystemPrompt(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	if systemPrompt != "" {
+		prompt = append([]memory.PromptMessage{{Role: "system", Content: systemPrompt}}, prompt...)
+	}
+	reply, err := l.doCompletionFromPrompt(ctx, req.Model, prompt)
 	if err != nil {
 		return nil, err
 	}

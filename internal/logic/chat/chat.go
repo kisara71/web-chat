@@ -15,4 +15,5 @@ type Logic interface {
 	DeleteConversation(ctx context.Context, req *chat.DeleteConversationReq, userID string) error
 	ClearMessages(ctx context.Context, req *chat.ClearMessagesReq, userID string) error
 	PullModules(ctx context.Context) (*chat.ModelListResp, error)
+	BuildUserSystemPrompt(ctx context.Context, userID string) (string, error)
 }

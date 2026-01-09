@@ -28,12 +28,15 @@ func (h *UserHandler) RegisterRoutes(engine *gin.Engine) {
 	engine.POST("/api/user/login", h.Login)
 	engine.POST("/api/user/login/code", h.LoginByCode)
 	engine.POST("/api/user/email/code", h.SendEmailCode)
+	engine.POST("/api/user/refresh", h.RefreshToken)
 
 	userGroup := engine.Group("/api/user")
 	userGroup.Use(middleware.Auth(h.svcCtx))
 	userGroup.PUT("/update", h.Update)
 	userGroup.POST("/logout", h.Logout)
 	userGroup.GET("/info", h.Info)
+	userGroup.GET("/profile", h.Profile)
+	userGroup.PUT("/profile", h.UpdateProfile)
 }
 
 func (h *UserHandler) Register(c *gin.Context) {
@@ -62,7 +65,7 @@ func (h *UserHandler) Login(c *gin.Context) {
 		Respond(c, 401, errcode.CodeUnauthorized, err.Error(), nil)
 		return
 	}
-	OK(c, gin.H{"token": token})
+	OK(c, token)
 }
 
 func (h *UserHandler) LoginByCode(c *gin.Context) {
@@ -77,7 +80,22 @@ func (h *UserHandler) LoginByCode(c *gin.Context) {
 		Respond(c, 401, errcode.CodeUnauthorized, err.Error(), nil)
 		return
 	}
-	OK(c, gin.H{"token": token})
+	OK(c, token)
+}
+
+func (h *UserHandler) RefreshToken(c *gin.Context) {
+	var req http_model.RefreshTokenReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		Respond(c, 400, errcode.CodeBadRequest, "invalid request", nil)
+		return
+	}
+	token, err := h.logic.RefreshToken(&req)
+	if err != nil {
+		logger.L().Errorf("refresh token error: %v", err)
+		Respond(c, 401, errcode.CodeUnauthorized, err.Error(), nil)
+		return
+	}
+	OK(c, token)
 }
 
 func (h *UserHandler) SendEmailCode(c *gin.Context) {
@@ -141,6 +159,50 @@ func (h *UserHandler) Info(c *gin.Context) {
 	resp, err := h.logic.GetUserInfo(req.UserID)
 	if err != nil {
 		logger.L().Errorf("get user info error: %v", err)
+		Respond(c, 400, errcode.CodeBadRequest, err.Error(), nil)
+		return
+	}
+	OK(c, resp)
+}
+
+func (h *UserHandler) UpdateProfile(c *gin.Context) {
+	var req http_model.UserProfileUpdateReq
+	if err := c.ShouldBindJSON(&req); err != nil {
+		Respond(c, 400, errcode.CodeBadRequest, "invalid request", nil)
+		return
+	}
+	userID, ok := c.Get("user_id")
+	if !ok {
+		Respond(c, 401, errcode.CodeUnauthorized, "unauthorized", nil)
+		return
+	}
+	id, ok := userID.(string)
+	if !ok {
+		Respond(c, 401, errcode.CodeUnauthorized, "invalid user", nil)
+		return
+	}
+	if err := h.logic.UpdateProfile(id, &req); err != nil {
+		logger.L().Errorf("update profile error: %v", err)
+		Respond(c, 400, errcode.CodeBadRequest, err.Error(), nil)
+		return
+	}
+	OK(c, nil)
+}
+
+func (h *UserHandler) Profile(c *gin.Context) {
+	userID, ok := c.Get("user_id")
+	if !ok {
+		Respond(c, 401, errcode.CodeUnauthorized, "unauthorized", nil)
+		return
+	}
+	id, ok := userID.(string)
+	if !ok {
+		Respond(c, 401, errcode.CodeUnauthorized, "invalid user", nil)
+		return
+	}
+	resp, err := h.logic.GetProfile(id)
+	if err != nil {
+		logger.L().Errorf("get profile error: %v", err)
 		Respond(c, 400, errcode.CodeBadRequest, err.Error(), nil)
 		return
 	}

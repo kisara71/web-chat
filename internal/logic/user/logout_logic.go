@@ -3,38 +3,42 @@ package user
 import (
 	"context"
 	"fmt"
-	"time"
 	"web-chat/api/http_model"
 	"web-chat/pkg/auth"
 	"web-chat/pkg/logger"
 )
 
-const blacklistPrefix = "jwt:blacklist:"
-
 func (l *logicImpl) Logout(req *http_model.LogoutReq) error {
-	if req == nil || req.Token == "" {
-		return fmt.Errorf("token is required")
+	if req == nil {
+		return fmt.Errorf("logout request is nil")
 	}
 	lgr := logger.L()
-	claim := &auth.UserClaim{}
-	_, err := l.svcCtx.Auth.TrackAuthToken(req.Token, claim)
-	if err != nil {
-		lgr.Errorf("logout token error: %v", err)
-		return err
+	if req.Token == "" && req.RefreshToken == "" {
+		return fmt.Errorf("token is required")
 	}
-	ttl := authTokenTTL
-	if claim.ExpiresAt > 0 {
-		expireAt := time.Unix(claim.ExpiresAt, 0)
-		if remain := time.Until(expireAt); remain > 0 {
-			ttl = remain
-		} else {
-			ttl = time.Minute
+	if req.Token != "" {
+		claim := &auth.UserClaim{}
+		_, err := l.svcCtx.Auth.TrackAuthToken(req.Token, claim)
+		if err != nil {
+			lgr.Errorf("logout token error: %v", err)
+			return err
+		}
+		if err := l.blacklistToken(context.Background(), accessBlacklistPrefix, req.Token, claim.ExpiresAt); err != nil {
+			lgr.Errorf("logout redis error: %v", err)
+			return err
 		}
 	}
-	key := blacklistPrefix + req.Token
-	if err := l.svcCtx.Infra.Redis.Set(context.Background(), key, "1", ttl).Err(); err != nil {
-		lgr.Errorf("logout redis error: %v", err)
-		return err
+	if req.RefreshToken != "" {
+		claim := &auth.UserClaim{}
+		_, err := l.svcCtx.Auth.TrackRefreshToken(req.RefreshToken, claim)
+		if err != nil {
+			lgr.Errorf("logout refresh token error: %v", err)
+			return err
+		}
+		if err := l.blacklistToken(context.Background(), refreshBlacklistPrefix, req.RefreshToken, claim.ExpiresAt); err != nil {
+			lgr.Errorf("logout refresh redis error: %v", err)
+			return err
+		}
 	}
 	return nil
 }

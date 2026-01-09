@@ -13,6 +13,11 @@ type LoginReq struct {
 	Password string `json:"password" binding:"required"`
 }
 
+type AuthTokenResp struct {
+	Token        string `json:"token"`
+	RefreshToken string `json:"refresh_token"`
+}
+
 type LoginCodeReq struct {
 	Email string `json:"email" binding:"required"`
 	Code  string `json:"code" binding:"required"`
@@ -30,7 +35,12 @@ type UserUpdateReq struct {
 }
 
 type LogoutReq struct {
-	Token string `json:"token" binding:"required"`
+	Token        string `json:"token" binding:"omitempty"`
+	RefreshToken string `json:"refresh_token" binding:"omitempty"`
+}
+
+type RefreshTokenReq struct {
+	RefreshToken string `json:"refresh_token" binding:"required"`
 }
 
 type UserInfoReq struct {
@@ -44,4 +54,18 @@ type UserInfoResp struct {
 	Phone     *string `json:"phone,omitempty"`
 	CreatedAt int64   `json:"created_at"`
 	UpdatedAt int64   `json:"updated_at"`
+}
+
+type UserProfileUpdateReq struct {
+	SystemPrompt    *string `json:"system_prompt" binding:"omitempty"`
+	ModelPreference *string `json:"model_preference" binding:"omitempty"`
+	Traits          *string `json:"traits" binding:"omitempty"`
+}
+
+type UserProfileResp struct {
+	SystemPrompt    string `json:"system_prompt"`
+	ModelPreference string `json:"model_preference"`
+	Traits          string `json:"traits"`
+	CreatedAt       int64  `json:"created_at"`
+	UpdatedAt       int64  `json:"updated_at"`
 }
